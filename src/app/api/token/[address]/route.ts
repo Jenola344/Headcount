@@ -3,6 +3,8 @@ import { createBaseClient } from '@sources/rpc';
 import { runHeadcount } from '@engine/runner';
 import type { RunConfig, TraceEvent } from '@engine/types';
 import { createTraceEmitter } from '@engine/utils';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export const maxDuration = 300; // 5 minutes max for Vercel
 
@@ -56,7 +58,15 @@ export async function GET(
       const tracer = createTraceEmitter(sendEvent);
 
       try {
-        await runHeadcount(client, config, tracer);
+        const output = await runHeadcount(client, config, tracer);
+        // Persist to logs/catalogue.jsonl
+        const cataloguePath = path.join(process.cwd(), 'logs', 'catalogue.jsonl');
+        const logsDir = path.dirname(cataloguePath);
+        if (!fs.existsSync(logsDir)) {
+          fs.mkdirSync(logsDir, { recursive: true });
+        }
+        // Minimal structure for catalogue
+        fs.appendFileSync(cataloguePath, JSON.stringify(output) + '\n');
       } catch (error) {
         sendEvent({
           type: 'ERROR',

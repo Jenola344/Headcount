@@ -14,6 +14,7 @@ import type {
   EvidenceRow,
   VerdictObject
 } from './types';
+import { resolveMetadata } from './types';
 import { createTraceEmitter, makeTraceEvent, normalizeAddress } from './utils';
 import { getTransferLogs, type TransferLog } from '@sources/rpc';
 
@@ -55,20 +56,7 @@ export async function runHeadcount(
       return buildRefusalOutput(holderRes.refusal, tracer, context);
     }
     const holderSet = holderRes.result;
-
-    // Re-fetch transfer logs for just the analysed holders?
-    // Actually, Stage 1 already paged all logs. We need to expose them from Stage 1 
-    // or re-fetch them. Let's re-fetch them here for simplicity in this orchestrator,
-    // though in a fully optimized version Stage 1 would return them.
-    // For now, we'll re-fetch the logs for the entire window to pass to Stage 2 & 4.
-    const logRes = await getTransferLogs(
-      client,
-      context.token.address as `0x${string}`,
-      holderSet.earliestBlockReached, // Use the actual bound reached
-      context.pinnedBlock,
-      500
-    );
-    transferLogs = logRes.logs;
+    transferLogs = holderRes.transferLogs;
 
     // ─── Stage 2: Classify Acquisition ───────────────────────────────────
     const acquisition = stage2ClassifyAcquisition(
@@ -139,7 +127,7 @@ export async function runHeadcount(
       };
     });
 
-    // ─── Stage 6: Adjudicate ─────────────────────────────────────────────
+    // ─── Stage 5: Adjudicate ─────────────────────────────────────────────
     const unresolvedRate = funding.unresolved / (holderSet.analysed - acquisition.dusted);
     
     const verdict = stage6Adjudicate(
@@ -170,7 +158,7 @@ export async function runHeadcount(
       verdict_before_probes: null
     };
 
-    // ─── Stage 5: Agent Loop ─────────────────────────────────────────────
+    // ─── Stage 6: Agent Loop ─────────────────────────────────────────────
     if (context.config.probeBudget > 0) {
       await runAgentLoop(verdictObj, evidence, context.config.probeBudget, context.config.groqApiKey, tracer);
     }
@@ -189,7 +177,7 @@ export async function runHeadcount(
     tracer.emit(makeTraceEvent('RECEIPT', { hash: receipt.hash }));
 
     // ─── Stage 8: Narration ──────────────────────────────────────────────
-    const narration = await narrateRun(verdictObj, context.token.symbol, context.config.groqApiKey, tracer);
+    const narration = await narrateRun(verdictObj, resolveMetadata(context.token.symbol, context.token.address), context.config.groqApiKey, tracer);
 
     // ─── Assemble Output ─────────────────────────────────────────────────
     return {

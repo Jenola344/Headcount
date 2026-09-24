@@ -10,10 +10,6 @@ export default function VerifyPage() {
   const [result, setResult] = useState<{ match: boolean; expected: string; computed: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const sampleReceipt = JSON.stringify({
-    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "canonical": '{"address":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","effective_holders":142050,"independence_ratio":0.998,"verdict":"ORGANIC"}'
-  }, null, 2);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,13 +71,6 @@ export default function VerifyPage() {
           <label className="font-mono text-xs text-gray-300 font-bold flex items-center gap-2">
             <FileCode className="w-4 h-4 text-[#00F0FF]" /> Receipt JSON Payload
           </label>
-          <button
-            type="button"
-            onClick={() => setJsonInput(sampleReceipt)}
-            className="font-mono text-xs text-[#14F195] hover:underline"
-          >
-            Load Sample Payload
-          </button>
         </div>
 
         <textarea

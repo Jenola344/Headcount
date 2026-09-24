@@ -2,6 +2,7 @@ import Link from 'next/link';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { RunOutput } from '@engine/types';
+import { resolveMetadata } from '@engine/types';
 import TokenCard from '@/components/TokenCard';
 import { ShieldCheck, ArrowRight, Layers, Terminal } from 'lucide-react';
 
@@ -80,20 +81,20 @@ export default async function FindingsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {runs.map((run, i) => (
-            <TokenCard
-              key={i}
-              symbol={run.context.token.symbol}
-              name={run.context.token.name}
-              address={run.context.token.address}
-              verdict={run.verdict.verdict}
-              independenceRatio={Number(run.verdict.independence_ratio)}
-              effectiveHolders={Number(run.verdict.effective_holders)}
-              clusters={run.funding?.clusters?.length ?? 0}
-              tag={`#${run.context.token.symbol.toLowerCase()}`}
-              description={run.narration || `Deterministic audit run executed for ${run.context.token.name}`}
-            />
-          ))}
+          {runs.map((run, i) => {
+            const symbol = resolveMetadata(run.context.token.symbol, run.context.token.address);
+            const name = resolveMetadata(run.context.token.name, run.context.token.address);
+            return (
+              <TokenCard
+                key={i}
+                address={run.context.token.address}
+                status="complete"
+                verdict={run.verdict.verdict as any}
+                tag={`#${typeof symbol === 'string' ? symbol.toLowerCase() : run.context.token.address.slice(0, 10)}`}
+                summary={run.narration || `Deterministic audit run executed for ${name}`}
+              />
+            );
+          })}
         </div>
       )}
 

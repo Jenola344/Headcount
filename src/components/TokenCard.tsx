@@ -57,7 +57,7 @@ export default function TokenCard({
   const short = `${address.slice(0, 6)}…${address.slice(-4)}`;
 
   return (
-    <Link href={`/case/${address}`}>
+    <Link href={`/token/${address}`}>
       <div className="group relative flex flex-col justify-between h-full bg-panel border border-line rounded-2xl p-6 hover:border-green/30 hover:bg-panel-2 transition-all duration-300 shadow-xl overflow-hidden min-h-[200px]">
         
         {/* Ambient glow on hover */}

@@ -16,6 +16,7 @@ export interface Stage1Output {
   ok: true;
   result: HolderSetResult;
   sourceCalls: SourceCall[];
+  transferLogs: import('@sources/rpc').TransferLog[];
 }
 
 export interface Stage1Refusal {
@@ -171,5 +172,5 @@ export async function stage1BuildHolderSet(
     return { ok: false, refusal };
   }
 
-  return { ok: true, result, sourceCalls };
+  return { ok: true, result, sourceCalls, transferLogs: logResult.logs };
 }

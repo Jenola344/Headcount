@@ -94,11 +94,17 @@ export default function TokenPage({ params }: { params: Promise<{ address: strin
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-extrabold tracking-tight text-white font-heading">
-              {openEvent ? (openEvent.data.token as any).name : 'Scanning Token...'}
+              {openEvent ? (
+                typeof (openEvent.data.token as any).name === 'string' 
+                  ? (openEvent.data.token as any).name 
+                  : `Token ${address.slice(0, 10)}…`
+              ) : 'Scanning Token...'}
             </h1>
             {openEvent && (
               <span className="px-2.5 py-0.5 rounded bg-[#181A28] border border-[#2B2E46] text-xs font-mono font-bold text-gray-300">
-                ${(openEvent.data.token as any).symbol}
+                {typeof (openEvent.data.token as any).symbol === 'string' 
+                  ? `$${(openEvent.data.token as any).symbol}` 
+                  : `${address.slice(0, 8)}…`}
               </span>
             )}
           </div>
@@ -189,7 +195,7 @@ export default function TokenPage({ params }: { params: Promise<{ address: strin
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
             <div className="bg-[#10111A] border border-[#202334] rounded-2xl p-6 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity"><Users className="w-16 h-16 text-[#14F195]" /></div>
@@ -210,6 +216,13 @@ export default function TokenPage({ params }: { params: Promise<{ address: strin
               <div className="text-gray-400 font-mono text-xs uppercase tracking-wider mb-2">Sybil Clusters</div>
               <div className="text-4xl font-extrabold text-white font-mono">{String(fundingEvent.data.clusters)}</div>
               <div className="text-xs text-gray-500 mt-2 font-mono">Collapsed funding rings</div>
+            </div>
+
+            <div className="bg-[#10111A] border border-[#202334] rounded-2xl p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity"><ShieldCheck className="w-16 h-16 text-[#14F195]" /></div>
+              <div className="text-gray-400 font-mono text-xs uppercase tracking-wider mb-2">Excluded Infra</div>
+              <div className="text-4xl font-extrabold text-white font-mono">{String(fundingEvent.data.infra_funded)}</div>
+              <div className="text-xs text-gray-500 mt-2 font-mono">CEX/Bridge origins (ignored)</div>
             </div>
           </motion.div>
         )}

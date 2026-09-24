@@ -113,14 +113,35 @@ export type TraceEvent = z.infer<typeof TraceEventSchema>;
 
 // ─── Token Metadata ────────────────────────────────────────────────────────────
 
+/**
+ * Metadata field unavailability — recorded when name(), symbol(), or decimals() reverts.
+ * METADATA FAILURE ≠ CONTRACT FAILURE.
+ */
+export interface MetadataFieldUnavailable {
+  status: 'UNAVAILABLE';
+  error: string;
+}
+
+export type MetadataField<T> = T | MetadataFieldUnavailable;
+
+export function isMetadataAvailable<T>(field: MetadataField<T>): field is T {
+  return !(field !== null && typeof field === 'object' && 'status' in field && (field as any).status === 'UNAVAILABLE');
+}
+
+/** Resolve a MetadataField to its value, or return a fallback if unavailable. */
+export function resolveMetadata<T>(field: MetadataField<T>, fallback: T): T {
+  return isMetadataAvailable(field) ? field : fallback;
+}
+
 export const TokenMetadataSchema = z.object({
   address: AddressSchema,
-  name: z.string(),
-  symbol: z.string(),
-  decimals: z.number(),
+  name: z.union([z.string(), z.object({ status: z.literal('UNAVAILABLE'), error: z.string() })]),
+  symbol: z.union([z.string(), z.object({ status: z.literal('UNAVAILABLE'), error: z.string() })]),
+  decimals: z.union([z.number(), z.object({ status: z.literal('UNAVAILABLE'), error: z.string() })]),
   totalSupply: z.string(), // BigInt as string
 });
 export type TokenMetadata = z.infer<typeof TokenMetadataSchema>;
+
 
 // ─── Run Context ───────────────────────────────────────────────────────────────
 

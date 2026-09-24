@@ -9,11 +9,10 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "reproduce": "tsx src/cli/reproduce.ts",
-    "catalogue": "tsx scripts/catalogue.ts",
-    "field-scan": "tsx scripts/field-scan.ts"
+    "reproduce": "tsx src/cli/reproduce.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.103.2",
     "clsx": "^2.1.1",
     "eventsource-parser": "^3.0.0",
     "framer-motion": "^13.4.0",
@@ -23,7 +22,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwind-merge": "^3.7.0",
-    "viem": "^2.30.0",
+    "viem": "^2.56.8",
+    "wagmi": "^3.7.7",
     "zod": "^3.24.0",
     "zod-to-json-schema": "^3.24.0"
   },

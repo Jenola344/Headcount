@@ -16,6 +16,7 @@ import type {
   EvidenceRow,
   Receipt
 } from './types';
+import { resolveMetadata } from './types';
 import { canonicalJSON, getExclusionListVersion } from './utils';
 
 export function stage7GenerateReceipt(

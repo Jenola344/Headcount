@@ -51,55 +51,103 @@ export function createBaseClient(rpcUrl?: string): PublicClient<Transport, Chain
 
 // ─── Token Metadata Read ────────────────────────────────────────────────────────
 
+/**
+ * Metadata field status: either the resolved value, or an unavailability record.
+ * METADATA FAILURE ≠ CONTRACT FAILURE.
+ */
+export interface MetadataFieldUnavailable {
+  status: 'UNAVAILABLE';
+  error: string;
+}
+
+export type MetadataField<T> = T | MetadataFieldUnavailable;
+
+export function isMetadataAvailable<T>(field: MetadataField<T>): field is T {
+  return !(field !== null && typeof field === 'object' && 'status' in field && (field as any).status === 'UNAVAILABLE');
+}
+
 export interface TokenMetadataResult {
-  name: string;
-  symbol: string;
-  decimals: number;
+  name: MetadataField<string>;
+  symbol: MetadataField<string>;
+  decimals: MetadataField<number>;
   totalSupply: bigint;
   sourceCalls: SourceCall[];
 }
 
+/**
+ * Read ERC-20 token metadata with independent fault tolerance.
+ *
+ * - name(), symbol(), decimals() are OPTIONAL — failures are captured, not thrown.
+ * - totalSupply() is REQUIRED — if it reverts, the token cannot be analysed.
+ * - Individual metadata failures never block holder/transfer analysis.
+ */
 export async function readTokenMetadata(
   client: PublicClient<Transport, Chain>,
   address: `0x${string}`
 ): Promise<TokenMetadataResult> {
   const sourceCalls: SourceCall[] = [];
 
-  await rateLimiter.acquire();
-  const [name, symbol, decimals, totalSupply] = await Promise.all([
-    retryWithBackoff(async () => {
-      sourceCalls.push(formatSourceCall('eth_call', `name:${address}`));
+  // ─── Read name (OPTIONAL) ─────────────────────────────────────────────────
+  let name: MetadataField<string>;
+  try {
+    await rateLimiter.acquire();
+    sourceCalls.push(formatSourceCall('eth_call', `name:${address}`));
+    name = await retryWithBackoff(async () => {
       return client.readContract({
         address,
         abi: [ERC20_NAME],
         functionName: 'name',
       }) as Promise<string>;
-    }),
-    retryWithBackoff(async () => {
-      sourceCalls.push(formatSourceCall('eth_call', `symbol:${address}`));
+    });
+  } catch (err) {
+    name = { status: 'UNAVAILABLE', error: `name() reverted: ${err instanceof Error ? err.message : String(err)}` };
+    sourceCalls.push(formatSourceCall('eth_call', `name:${address}:FAILED`));
+  }
+
+  // ─── Read symbol (OPTIONAL) ───────────────────────────────────────────────
+  let symbol: MetadataField<string>;
+  try {
+    await rateLimiter.acquire();
+    sourceCalls.push(formatSourceCall('eth_call', `symbol:${address}`));
+    symbol = await retryWithBackoff(async () => {
       return client.readContract({
         address,
         abi: [ERC20_SYMBOL],
         functionName: 'symbol',
       }) as Promise<string>;
-    }),
-    retryWithBackoff(async () => {
-      sourceCalls.push(formatSourceCall('eth_call', `decimals:${address}`));
+    });
+  } catch (err) {
+    symbol = { status: 'UNAVAILABLE', error: `symbol() reverted: ${err instanceof Error ? err.message : String(err)}` };
+    sourceCalls.push(formatSourceCall('eth_call', `symbol:${address}:FAILED`));
+  }
+
+  // ─── Read decimals (OPTIONAL) ─────────────────────────────────────────────
+  let decimals: MetadataField<number>;
+  try {
+    await rateLimiter.acquire();
+    sourceCalls.push(formatSourceCall('eth_call', `decimals:${address}`));
+    decimals = await retryWithBackoff(async () => {
       return client.readContract({
         address,
         abi: [ERC20_DECIMALS],
         functionName: 'decimals',
       }) as Promise<number>;
-    }),
-    retryWithBackoff(async () => {
-      sourceCalls.push(formatSourceCall('eth_call', `totalSupply:${address}`));
-      return client.readContract({
-        address,
-        abi: [ERC20_TOTAL_SUPPLY],
-        functionName: 'totalSupply',
-      }) as Promise<bigint>;
-    }),
-  ]);
+    });
+  } catch (err) {
+    decimals = { status: 'UNAVAILABLE', error: `decimals() reverted: ${err instanceof Error ? err.message : String(err)}` };
+    sourceCalls.push(formatSourceCall('eth_call', `decimals:${address}:FAILED`));
+  }
+
+  // ─── Read totalSupply (REQUIRED — this IS the contract readability test) ──
+  await rateLimiter.acquire();
+  sourceCalls.push(formatSourceCall('eth_call', `totalSupply:${address}`));
+  const totalSupply = await retryWithBackoff(async () => {
+    return client.readContract({
+      address,
+      abi: [ERC20_TOTAL_SUPPLY],
+      functionName: 'totalSupply',
+    }) as Promise<bigint>;
+  });
 
   return { name, symbol, decimals, totalSupply, sourceCalls };
 }

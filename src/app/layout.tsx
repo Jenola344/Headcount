@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   description: 'Deterministic on-chain forensics engine measuring independent human holders behind Base ERC-20 tokens.',
 };
 
+import { Providers } from '@/components/Providers';
+import MotionBackground from '@/components/MotionBackground';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,12 +37,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${archivo.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} min-h-screen bg-ink text-text antialiased flex flex-col`}>
-        <BannerNotification />
-        <HeaderNavbar />
+        <Providers>
+          <MotionBackground />
+          <BannerNotification />
+          <HeaderNavbar />
 
-        <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </main>
+          <main className="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+            {children}
+          </main>
+        </Providers>
 
         <footer className="w-full border-t border-line bg-panel py-8 px-4 text-xs font-mono text-text-muted">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">

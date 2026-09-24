@@ -35,7 +35,7 @@ export default function SearchSection() {
     const err = validate(address);
     if (err) { setError(err); return; }
     setIsLoading(true);
-    router.push(`/case/${address}`);
+    router.push(`/token/${address}`);
   };
 
   return (

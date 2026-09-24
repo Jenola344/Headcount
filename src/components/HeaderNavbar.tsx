@@ -3,12 +3,87 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
+import { base } from 'wagmi/chains';
+import { useState, useEffect } from 'react';
+
+function WalletDropdown({ onClose }: { onClose: () => void }) {
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const [holdings, setHoldings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!address) return;
+    
+    fetch(`/api/wallet/holdings?address=${address}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          setError(data.error);
+        } else if (data.tokenBalances) {
+          setHoldings(data.tokenBalances.filter((t: any) => t.tokenBalance !== '0x0' && t.tokenBalance !== '0'));
+        } else if (Array.isArray(data)) {
+          setHoldings(data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        setError('Failed to fetch holdings');
+        setLoading(false);
+      });
+  }, [address]);
+
+  return (
+    <div className="absolute top-full right-4 mt-2 w-80 bg-panel border border-line rounded-xl shadow-2xl p-4 z-50">
+      <div className="flex items-center justify-between mb-4 border-b border-line-soft pb-2">
+        <h3 className="font-mono text-xs font-bold text-text uppercase tracking-widest">Base Holdings</h3>
+        <button onClick={onClose} className="text-text-muted hover:text-text">✕</button>
+      </div>
+
+      {loading ? (
+        <div className="py-8 text-center text-xs font-mono animate-pulse text-text-muted">Loading tokens...</div>
+      ) : error ? (
+        <div className="py-4 text-center text-xs font-mono text-red-500">{error}</div>
+      ) : holdings.length === 0 ? (
+        <div className="py-4 text-center text-xs font-mono text-text-muted">No ERC-20 tokens found.</div>
+      ) : (
+        <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+          {holdings.map((h, i) => {
+             const bal = h.tokenBalance ? parseInt(h.tokenBalance, 16) / 1e18 : 0;
+             return (
+              <div key={i} className="flex justify-between items-center text-xs font-mono bg-panel-2 p-2 rounded border border-line">
+                <span className="truncate w-32 text-text-muted" title={h.contractAddress}>{h.contractAddress}</span>
+                <span className="text-green font-bold">{bal > 0 ? bal.toFixed(4) : bal}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="mt-4 pt-3 border-t border-line-soft">
+        <button 
+          onClick={() => { disconnect(); onClose(); }} 
+          className="w-full py-2 bg-red-500/10 text-red-500 rounded font-mono text-xs hover:bg-red-500/20 transition-colors"
+        >
+          Disconnect
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function HeaderNavbar() {
   const pathname = usePathname();
-  // We mock a connected state for the scope of this frontend
-  const [isConnected, setIsConnected] = useState(false);
+  const { address, isConnected, chain } = useAccount();
+  const { connect, connectors, isPending } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { switchChain } = useSwitchChain();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const isWrongNetwork = isConnected && chain?.id !== base.id;
+
   const activeGuards = isConnected ? 2 : 0;
 
   const navItems = [
@@ -70,26 +145,39 @@ export default function HeaderNavbar() {
           </button>
 
           {/* Wallet Connection */}
-          <button 
-            onClick={() => setIsConnected(!isConnected)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-panel border border-line hover:border-line-soft transition-colors cursor-pointer"
-          >
-            {isConnected ? (
-              <>
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green text-green-ink font-bold text-[10px]">
-                  0x
-                </div>
-                <span className="hidden sm:inline-block font-mono text-xs text-text font-medium">
-                  0x71C...97dE
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
-              </>
-            ) : (
-              <span className="font-mono text-xs text-text font-medium py-0.5">
-                Connect Wallet
-              </span>
-            )}
-          </button>
+          {isWrongNetwork ? (
+            <button 
+              onClick={() => switchChain?.({ chainId: base.id })}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/50 text-red-500 hover:bg-red-500/20 transition-colors text-xs font-mono font-medium"
+            >
+              Wrong Network
+            </button>
+          ) : (
+            <div className="relative">
+              <button 
+                onClick={() => isConnected ? setIsDropdownOpen(!isDropdownOpen) : connect({ connector: connectors[0] })}
+                disabled={isPending}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-panel border border-line hover:border-line-soft transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isConnected && address ? (
+                  <>
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green text-green-ink font-bold text-[10px]">
+                      0x
+                    </div>
+                    <span className="hidden sm:inline-block font-mono text-xs text-text font-medium">
+                      {address.slice(0, 6)}...{address.slice(-4)}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  </>
+                ) : (
+                  <span className="font-mono text-xs text-text font-medium py-0.5">
+                    {isPending ? 'Connecting...' : 'Connect Wallet'}
+                  </span>
+                )}
+              </button>
+              {isDropdownOpen && <WalletDropdown onClose={() => setIsDropdownOpen(false)} />}
+            </div>
+          )}
         </div>
       </div>
 

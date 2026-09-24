@@ -3,10 +3,15 @@
  * 
  * Resolve input address, validate it's an ERC-20, pin block number,
  * emit RUN_OPENED event. Failure → UNVERIFIABLE / CONTRACT_UNREADABLE.
+ * 
+ * IMPORTANT: METADATA FAILURE ≠ CONTRACT FAILURE
+ * name(), symbol(), decimals() are OPTIONAL metadata.
+ * Only totalSupply() is required to prove the address is an ERC-20.
  */
 
 import type { PublicClient, Transport, Chain } from 'viem';
 import type { RunConfig, RunContext, TokenMetadata, TraceEmitter } from './types';
+import { resolveMetadata } from './types';
 import { readTokenMetadata, getCurrentBlock, type SourceCall } from '@sources/rpc';
 import { getEngineCommit, makeTraceEvent } from './utils';
 
@@ -31,6 +36,8 @@ export type Stage0Output =
  * 
  * 1. Pin the block number FIRST (before any other read)
  * 2. Read token metadata (name, symbol, decimals, totalSupply)
+ *    — name/symbol/decimals are OPTIONAL; failures are captured, never thrown
+ *    — only totalSupply failure = CONTRACT_UNREADABLE
  * 3. Emit RUN_OPENED trace event
  * 4. Return RunContext or refusal
  */
@@ -63,15 +70,18 @@ export async function stage0Admit(
   }
 
   // ─── Step 2: Read token metadata ─────────────────────────────────────────
+  // readTokenMetadata now reads name/symbol/decimals independently with try/catch.
+  // It only throws if totalSupply() fails — the actual contract readability test.
   let tokenData: Awaited<ReturnType<typeof readTokenMetadata>>;
   try {
     tokenData = await readTokenMetadata(client, address);
     sourceCalls.push(...tokenData.sourceCalls);
   } catch (err) {
+    // totalSupply() failed — this IS a contract readability failure
     const refusal: Stage0Refusal = {
       verdict: 'UNVERIFIABLE',
       reason: 'CONTRACT_UNREADABLE',
-      detail: `Failed to read ERC-20 metadata from ${address}: ${String(err)}`,
+      detail: `Failed to read totalSupply() from ${address} — contract is unreadable: ${String(err)}`,
       sourceCalls,
     };
     tracer.emit(makeTraceEvent('REFUSAL', {
@@ -83,11 +93,13 @@ export async function stage0Admit(
   }
 
   // ─── Step 3: Validate it's actually a token ──────────────────────────────
-  if (!tokenData.name || !tokenData.symbol || tokenData.totalSupply === 0n) {
+  // Only totalSupply is required. A zero totalSupply means this isn't a meaningful token.
+  // Missing name/symbol does NOT disqualify — many valid tokens lack these.
+  if (tokenData.totalSupply === 0n) {
     const refusal: Stage0Refusal = {
       verdict: 'UNVERIFIABLE',
       reason: 'NOT_A_TOKEN',
-      detail: `Address ${address} does not appear to be a valid ERC-20 token (name="${tokenData.name}", symbol="${tokenData.symbol}", totalSupply=${tokenData.totalSupply})`,
+      detail: `Address ${address} has totalSupply=0 — not a valid ERC-20 token for analysis`,
       sourceCalls,
     };
     tracer.emit(makeTraceEvent('REFUSAL', {
@@ -99,6 +111,7 @@ export async function stage0Admit(
   }
 
   // ─── Step 4: Build context ───────────────────────────────────────────────
+  // Use the contract address as fallback display name/symbol when metadata is unavailable
   const token: TokenMetadata = {
     address,
     name: tokenData.name,
@@ -126,6 +139,11 @@ export async function stage0Admit(
     },
     block: Number(pinnedBlock),
     engine_commit: context.engineCommit,
+    metadata_notes: [
+      ...(resolveMetadata(token.name, '') === '' ? [] : []),
+      ...(!resolveMetadata(token.name, '') ? ['name() unavailable — using address as fallback'] : []),
+      ...(!resolveMetadata(token.symbol, '') ? ['symbol() unavailable — using address as fallback'] : []),
+    ].filter(Boolean),
   }));
 
   return {
@@ -133,3 +151,4 @@ export async function stage0Admit(
     result: { context, sourceCalls },
   };
 }
+

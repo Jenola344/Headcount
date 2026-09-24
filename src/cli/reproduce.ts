@@ -18,7 +18,7 @@ async function main() {
   const pinnedBlockStr = args[1];
 
   if (!tokenAddress || !tokenAddress.startsWith('0x')) {
-    console.error('Usage: pnpm reproduce <token_address> [pinned_block]');
+    console.error('Usage: npm run reproduce <token_address> [pinned_block]');
     process.exit(1);
   }
 
