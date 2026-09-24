@@ -10,10 +10,8 @@ import {
   http,
   parseAbiItem,
   type PublicClient,
-  type Log,
   type Transport,
   type Chain,
-  formatUnits,
 } from 'viem';
 import { base } from 'viem/chains';
 import { retryWithBackoff, RateLimiter } from '@engine/utils';
@@ -63,7 +61,7 @@ export interface MetadataFieldUnavailable {
 export type MetadataField<T> = T | MetadataFieldUnavailable;
 
 export function isMetadataAvailable<T>(field: MetadataField<T>): field is T {
-  return !(field !== null && typeof field === 'object' && 'status' in field && (field as any).status === 'UNAVAILABLE');
+  return !(field !== null && typeof field === 'object' && 'status' in field && field.status === 'UNAVAILABLE');
 }
 
 export interface TokenMetadataResult {

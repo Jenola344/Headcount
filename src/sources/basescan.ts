@@ -112,13 +112,11 @@ export async function isContractVerified(
  * This is a supplementary data point, not the engine's own count.
  */
 export async function getApproxHolderCount(
-  address: string,
-  apiKey?: string
+  address: string
 ): Promise<{ count: number | null; sourceCall: SourceCall }> {
   await basescanLimiter.acquire();
 
   const sourceCall = formatSourceCall('basescan:tokenHolderCount', address);
-  const key = apiKey || process.env.BASESCAN_API_KEY || '';
 
   try {
     // Basescan doesn't have a direct holder count API on free tier

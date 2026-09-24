@@ -152,8 +152,7 @@ export async function batchResolveFirstFunders(
  */
 export async function checkExogenousActivity(
   apiKey: string,
-  address: string,
-  tokenAddress: string
+  address: string
 ): Promise<{ exogenousTxCount: number; sourceCall: SourceCall }> {
   const { result, sourceCall } = await getAssetTransfers(apiKey, {
     fromAddress: address,

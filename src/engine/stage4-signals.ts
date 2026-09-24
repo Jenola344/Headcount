@@ -131,13 +131,11 @@ export async function stage4ComputeSignals(
   let exogenousCount = 0;
 
   if (context.config.alchemyApiKey) {
-    const tokenAddr = context.token.address;
     const promises = exogenousSamples.map(async (h) => {
       try {
         const { exogenousTxCount, sourceCall } = await checkExogenousActivity(
           context.config.alchemyApiKey!,
-          normalizeAddress(h.address),
-          tokenAddr
+          normalizeAddress(h.address)
         );
         sourceCalls.push(sourceCall);
         if (exogenousTxCount > 0) return 1;
