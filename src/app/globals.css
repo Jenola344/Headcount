@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Design tokens ── */
+  --color-ink: #0A0A0D;
+  --color-panel: #111318;
+  --color-panel-2: #15181F;
+  --color-line: #23262C;
+  --color-line-soft: #1A1C22;
+  --color-text: #F4F4F1;
+  --color-text-muted: #9AA0AC;
+  --color-text-faint: #585F6C;
+  --color-paper: #ECECE1;
+  --color-green: #37E29A;
+  --color-green-ink: #06251B;
+  --color-purple: #9B7CF6;
+  --color-cyan: #4FD8E6;
+  --color-amber: #F3BA5A;
+  --color-red: #F2748A;
+  --color-gray: #A9AFBC;
+
+  /* ── Font families ── */
+  --font-heading: var(--font-archivo), sans-serif;
+  --font-body: var(--font-plex-sans), sans-serif;
+  --font-mono: var(--font-plex-mono), monospace;
+}
+
+/* CSS custom properties for use in arbitrary values */
+:root {
+  --ink: #0A0A0D;
+  --panel: #111318;
+  --panel-2: #15181F;
+  --line: #23262C;
+  --line-soft: #1A1C22;
+  --text: #F4F4F1;
+  --text-muted: #9AA0AC;
+  --text-faint: #585F6C;
+  --paper: #ECECE1;
+  --green: #37E29A;
+  --green-ink: #06251B;
+  --purple: #9B7CF6;
+  --cyan: #4FD8E6;
+  --amber: #F3BA5A;
+  --red: #F2748A;
+  --gray: #A9AFBC;
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--text);
+  font-family: var(--font-plex-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-soft); }
+
+/* Verdict pill classes */
+.pill-live    { color: var(--green);  border: 1px solid var(--green); }
+.pill-queued  { color: var(--purple); border: 1px solid var(--purple); }
+.pill-organic { color: var(--cyan);   border: 1px solid var(--cyan); }
+.pill-conc    { color: var(--amber);  border: 1px solid var(--amber); }
+.pill-man     { color: var(--red);    border: 1px solid var(--red); }
+.pill-unv     { color: var(--gray);   border: 1px solid var(--gray); }
+
+/* Pulsing dot for live status */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse { animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Typography helpers */
+.font-heading   { font-family: var(--font-archivo), sans-serif; }
+.font-mono-code { font-family: var(--font-plex-mono), monospace; }
+

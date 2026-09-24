@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-09-20",
+  "entries": [
+    {
+      "address": "0x3154cf16ccdb4c6d922629664174b904d80f2c35",
+      "label": "Base Bridge (L1StandardBridge Proxy)",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000010",
+      "label": "Base Bridge (L2StandardBridge)",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000007",
+      "label": "Base Bridge (L2CrossDomainMessenger)",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000011",
+      "label": "Base SequencerFeeVault",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000012",
+      "label": "Base L1FeeVault",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000015",
+      "label": "Base L1Block",
+      "category": "bridge",
+      "source": "https://docs.base.org/docs/base-contracts",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43",
+      "label": "Coinbase (Hot Wallet 1)",
+      "category": "cex",
+      "source": "https://basescan.org/accounts/label/coinbase",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x1a1c6d65d9d4feab8017f3f3685c97e3aa78d8b5",
+      "label": "Coinbase (Hot Wallet 2)",
+      "category": "cex",
+      "source": "https://basescan.org/accounts/label/coinbase",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0xcdac0d6c6c59727a65f871236188350531885c43",
+      "label": "Coinbase Commerce",
+      "category": "cex",
+      "source": "https://basescan.org/accounts/label/coinbase",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x7d93f93d41604572119e4be7757a1a12a0f4c0f1",
+      "label": "Coinbase (Miscellaneous)",
+      "category": "cex",
+      "source": "https://basescan.org/accounts/label/coinbase",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x28c6c06298d514db089934071355e5743bf21d60",
+      "label": "Binance (Hot Wallet 14)",
+      "category": "cex",
+      "source": "https://etherscan.io/accounts/label/binance",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
+      "label": "Binance (Hot Wallet)",
+      "category": "cex",
+      "source": "https://etherscan.io/accounts/label/binance",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0xdfd5293d8e347dfe59e90efd55b2956a1343963d",
+      "label": "Binance (Hot Wallet 16)",
+      "category": "cex",
+      "source": "https://etherscan.io/accounts/label/binance",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x2f47a1c2db4a3b78cda44eade915c3b19107ddcc",
+      "label": "Kraken (Hot Wallet)",
+      "category": "cex",
+      "source": "https://etherscan.io/accounts/label/kraken",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0",
+      "label": "Kraken (Hot Wallet 4)",
+      "category": "cex",
+      "source": "https://etherscan.io/accounts/label/kraken",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x0000000071727de22e5e9d8baf0edac6f37da032",
+      "label": "ERC-4337 EntryPoint v0.7",
+      "category": "bundler",
+      "source": "https://github.com/eth-infinitism/account-abstraction",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789",
+      "label": "ERC-4337 EntryPoint v0.6",
+      "category": "bundler",
+      "source": "https://github.com/eth-infinitism/account-abstraction",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad",
+      "label": "Uniswap Universal Router",
+      "category": "router",
+      "source": "https://docs.uniswap.org/contracts/universal-router/overview",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x2626664c2603336e57b271c5c0b26f421741e481",
+      "label": "Uniswap Universal Router V2",
+      "category": "router",
+      "source": "https://docs.uniswap.org/contracts/universal-router/overview",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+      "label": "0x Exchange Proxy",
+      "category": "router",
+      "source": "https://0x.org/docs",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x1111111254eeb25477b68fb85ed929f73a960582",
+      "label": "1inch v5 Router",
+      "category": "router",
+      "source": "https://1inch.io",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+      "label": "Kyberswap Router",
+      "category": "router",
+      "source": "https://kyberswap.com",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x881d40237659c251811cec9c364ef91dc08d300c",
+      "label": "Metamask Swap Router",
+      "category": "router",
+      "source": "https://metamask.io",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0xaedb61f1d42df4c73f1c0c42e1d44f6cc1b096ab",
+      "label": "Coinbase Wallet Faucet",
+      "category": "faucet",
+      "source": "https://basescan.org/accounts/label/coinbase",
+      "added_date": "2026-09-20"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000006",
+      "label": "Base WETH",
+      "category": "router",
+      "source": "https://docs.base.org",
+      "added_date": "2026-09-20"
+    }
+  ]
+}

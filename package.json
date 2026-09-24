@@ -1,0 +1,44 @@
+{
+  "name": "headcount",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "reproduce": "tsx src/cli/reproduce.ts",
+    "catalogue": "tsx scripts/catalogue.ts",
+    "field-scan": "tsx scripts/field-scan.ts"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "eventsource-parser": "^3.0.0",
+    "framer-motion": "^13.4.0",
+    "groq-sdk": "^0.15.0",
+    "lucide-react": "^1.47.0",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwind-merge": "^3.7.0",
+    "viem": "^2.30.0",
+    "zod": "^3.24.0",
+    "zod-to-json-schema": "^3.24.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "autoprefixer": "^10.6.1",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.3.0",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}
