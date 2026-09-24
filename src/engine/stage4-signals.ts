@@ -85,20 +85,12 @@ export async function stage4ComputeSignals(
 
   // Map cluster members for HHI adjustment
   const clusterMap = new Map<string, string[]>();
-  const holderClusterMap = new Map<string, string>();
 
   for (const cluster of funding.clusters) {
     clusterMap.set(cluster.id, cluster.members);
-    for (const member of cluster.members) {
-      holderClusterMap.set(member, cluster.id);
-    }
   }
 
-  const clusterAdjustedHhi = computeClusterAdjustedHHI(
-    holderShares,
-    clusterMap,
-    holderClusterMap
-  );
+  const clusterAdjustedHhi = computeClusterAdjustedHHI(holderShares, clusterMap);
 
   // ─── Signal: Dormancy Rate & Hold Age ────────────────────────────────────
   let dormantCount = 0;

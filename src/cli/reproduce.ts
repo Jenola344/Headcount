@@ -41,7 +41,14 @@ async function main() {
   const tracer = createTraceEmitter((event: TraceEvent) => {
     switch (event.type) {
       case 'RUN_OPENED':
-        console.log(`\n📦 Token: ${(event.data.token as any).name} (${(event.data.token as any).symbol})`);
+        const token = event.data.token;
+        const tokenName = token && typeof token === 'object' && 'name' in token && typeof token.name === 'string'
+          ? token.name
+          : 'Unknown';
+        const tokenSymbol = token && typeof token === 'object' && 'symbol' in token && typeof token.symbol === 'string'
+          ? token.symbol
+          : 'UNKNOWN';
+        console.log(`\n📦 Token: ${tokenName} (${tokenSymbol})`);
         console.log(`📌 Pinned Block: ${event.data.block}`);
         break;
       case 'HOLDER_SET':

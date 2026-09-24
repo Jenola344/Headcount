@@ -7,10 +7,20 @@ import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
 import { base } from 'wagmi/chains';
 import { useState, useEffect } from 'react';
 
+interface WalletTokenBalance {
+  contractAddress: string;
+  tokenBalance?: string;
+}
+
+interface WalletHoldingsResponse {
+  error?: string;
+  tokenBalances?: WalletTokenBalance[];
+}
+
 function WalletDropdown({ onClose }: { onClose: () => void }) {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-  const [holdings, setHoldings] = useState<any[]>([]);
+  const [holdings, setHoldings] = useState<WalletTokenBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -19,17 +29,17 @@ function WalletDropdown({ onClose }: { onClose: () => void }) {
     
     fetch(`/api/wallet/holdings?address=${address}`)
       .then(res => res.json())
-      .then(data => {
-        if (data.error) {
+      .then((data: WalletHoldingsResponse | WalletTokenBalance[]) => {
+        if ('error' in data && data.error) {
           setError(data.error);
-        } else if (data.tokenBalances) {
-          setHoldings(data.tokenBalances.filter((t: any) => t.tokenBalance !== '0x0' && t.tokenBalance !== '0'));
+        } else if ('tokenBalances' in data && data.tokenBalances) {
+          setHoldings(data.tokenBalances.filter(t => t.tokenBalance !== '0x0' && t.tokenBalance !== '0'));
         } else if (Array.isArray(data)) {
           setHoldings(data);
         }
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Failed to fetch holdings');
         setLoading(false);
       });
@@ -78,7 +88,6 @@ export default function HeaderNavbar() {
   const pathname = usePathname();
   const { address, isConnected, chain } = useAccount();
   const { connect, connectors, isPending } = useConnect();
-  const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 

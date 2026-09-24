@@ -125,7 +125,7 @@ export interface MetadataFieldUnavailable {
 export type MetadataField<T> = T | MetadataFieldUnavailable;
 
 export function isMetadataAvailable<T>(field: MetadataField<T>): field is T {
-  return !(field !== null && typeof field === 'object' && 'status' in field && (field as any).status === 'UNAVAILABLE');
+  return !(field !== null && typeof field === 'object' && 'status' in field && field.status === 'UNAVAILABLE');
 }
 
 /** Resolve a MetadataField to its value, or return a fallback if unavailable. */

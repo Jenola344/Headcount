@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, ShieldAlert, ArrowLeft, Terminal, FileCode, CheckCircle2, XCircle } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ArrowLeft, FileCode, CheckCircle2, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function VerifyPage() {

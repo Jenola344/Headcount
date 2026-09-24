@@ -25,14 +25,13 @@ export function computeHHI(shares: number[]): number {
  */
 export function computeClusterAdjustedHHI(
   holderShares: Map<string, number>, // address -> supply share
-  clusters: Map<string, string[]>,   // clusterId -> [address, ...]
-  holderCluster: Map<string, string> // address -> clusterId
+  clusters: Map<string, string[]>   // clusterId -> [address, ...]
 ): number {
   // Merge shares by cluster
   const mergedShares: number[] = [];
   const processed = new Set<string>();
 
-  for (const [clusterId, members] of clusters) {
+  for (const members of clusters.values()) {
     let mergedShare = 0;
     for (const member of members) {
       mergedShare += holderShares.get(member) ?? 0;

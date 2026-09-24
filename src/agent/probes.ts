@@ -7,7 +7,6 @@
 
 import type { EvidenceRow, ProbeResult, ProbeRequest, VerdictObject } from '@engine/types';
 import { ProbeCosts } from '@engine/types';
-import { normalizeAddress } from '@engine/utils';
 
 export function executeProbe(
   probeReq: ProbeRequest, 

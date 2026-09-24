@@ -7,7 +7,7 @@
 
 import type { VerdictObject } from '@engine/types';
 
-export function getFallbackNarration(verdictObj: VerdictObject, tokenSymbol: string): string {
+export function getFallbackNarration(verdictObj: VerdictObject): string {
   const {
     verdict,
     effective_holders,

@@ -61,6 +61,13 @@ export default function TokenPage({ params }: { params: Promise<{ address: strin
   const receiptEvent = events.find(e => e.type === 'RECEIPT');
   const openEvent = events.find(e => e.type === 'RUN_OPENED');
   const fundingEvent = events.find(e => e.type === 'FUNDING');
+  const tokenData = openEvent?.data.token;
+  const tokenName = tokenData && typeof tokenData === 'object' && 'name' in tokenData && typeof tokenData.name === 'string'
+    ? tokenData.name
+    : `Token ${address.slice(0, 10)}…`;
+  const tokenSymbol = tokenData && typeof tokenData === 'object' && 'symbol' in tokenData && typeof tokenData.symbol === 'string'
+    ? tokenData.symbol
+    : null;
 
   const copyAddress = () => {
     navigator.clipboard.writeText(address);
@@ -94,16 +101,12 @@ export default function TokenPage({ params }: { params: Promise<{ address: strin
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-extrabold tracking-tight text-white font-heading">
-              {openEvent ? (
-                typeof (openEvent.data.token as any).name === 'string' 
-                  ? (openEvent.data.token as any).name 
-                  : `Token ${address.slice(0, 10)}…`
-              ) : 'Scanning Token...'}
+              {openEvent ? tokenName : 'Scanning Token...'}
             </h1>
             {openEvent && (
               <span className="px-2.5 py-0.5 rounded bg-[#181A28] border border-[#2B2E46] text-xs font-mono font-bold text-gray-300">
-                {typeof (openEvent.data.token as any).symbol === 'string' 
-                  ? `$${(openEvent.data.token as any).symbol}` 
+                {tokenSymbol
+                  ? `$${tokenSymbol}`
                   : `${address.slice(0, 8)}…`}
               </span>
             )}

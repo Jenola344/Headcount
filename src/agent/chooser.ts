@@ -9,6 +9,15 @@ import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { ProbeType, type ProbeRequest, type VerdictObject } from '@engine/types';
 
+type JsonSchemaResponseFormat = {
+  type: 'json_schema';
+  json_schema: {
+    name: string;
+    schema: ReturnType<typeof zodToJsonSchema>;
+    strict: true;
+  };
+};
+
 const ChooserOutputSchema = z.object({
   stop: z.boolean().describe("Set to true if no further probes are needed or budget is too low."),
   probe: ProbeType.nullable().describe("The selected probe from the menu, or null if stopping."),
@@ -54,27 +63,28 @@ ${JSON.stringify(verdict, null, 2)}
   `.trim();
 
   try {
-    const response = await groq.chat.completions.create({
+    const request = {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
       model: 'llama-3.3-70b-versatile',
-      response_format: { 
+      response_format: {
         type: 'json_schema', 
         json_schema: {
           name: 'chooser_output',
           schema: jsonSchema,
           strict: true 
         } 
-      } as any,
+      } satisfies JsonSchemaResponseFormat,
       temperature: 0.1,
-    });
+    } as unknown as Parameters<typeof groq.chat.completions.create>[0];
+    const response = await groq.chat.completions.create(request);
 
-    const content = response.choices[0].message?.content;
+    const content = 'choices' in response ? response.choices[0].message?.content : null;
     if (!content) throw new Error('Empty response from Groq');
 
-    const parsed = JSON.parse(content);
+    const parsed = ChooserOutputSchema.parse(JSON.parse(content));
     
     if (parsed.stop || !parsed.probe) {
       return { stop: true, reason: parsed.reason };

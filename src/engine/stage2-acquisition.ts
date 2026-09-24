@@ -10,7 +10,6 @@
  * Dusted holders are removed from downstream denominators.
  */
 
-import type { PublicClient, Transport, Chain } from 'viem';
 import type {
   RunContext,
   HolderBalance,
@@ -20,7 +19,6 @@ import type {
 import type { AcquisitionClass } from './types';
 import type { TransferLog } from '@sources/rpc';
 import { getDustThreshold, makeTraceEvent, normalizeAddress } from './utils';
-import type { SourceCall } from '@sources/rpc';
 
 /**
  * Classify acquisition paths for all holders.

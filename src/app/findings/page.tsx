@@ -4,7 +4,7 @@ import * as path from 'path';
 import type { RunOutput } from '@engine/types';
 import { resolveMetadata } from '@engine/types';
 import TokenCard from '@/components/TokenCard';
-import { ShieldCheck, ArrowRight, Layers, Terminal } from 'lucide-react';
+import { ShieldCheck, Terminal } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +89,7 @@ export default async function FindingsPage() {
                 key={i}
                 address={run.context.token.address}
                 status="complete"
-                verdict={run.verdict.verdict as any}
+                verdict={run.verdict.verdict}
                 tag={`#${typeof symbol === 'string' ? symbol.toLowerCase() : run.context.token.address.slice(0, 10)}`}
                 summary={run.narration || `Deterministic audit run executed for ${name}`}
               />

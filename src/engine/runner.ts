@@ -16,12 +16,13 @@ import type {
 } from './types';
 import { resolveMetadata } from './types';
 import { createTraceEmitter, makeTraceEvent, normalizeAddress } from './utils';
-import { getTransferLogs, type TransferLog } from '@sources/rpc';
+import { type TransferLog } from '@sources/rpc';
 
 import { stage0Admit } from './stage0-admit';
-import { stage1BuildHolderSet } from './stage1-holders';
+import { stage1BuildHolderSet, type Stage1Refusal } from './stage1-holders';
 import { stage2ClassifyAcquisition } from './stage2-acquisition';
-import { stage3ResolveFunding } from './stage3-funding';
+import { stage3ResolveFunding, type Stage3Refusal } from './stage3-funding';
+import type { Stage0Refusal } from './stage0-admit';
 import { stage4ComputeSignals } from './stage4-signals';
 import { stage6Adjudicate } from './stage6-adjudicate';
 import { stage7GenerateReceipt } from './stage7-receipt';
@@ -75,7 +76,7 @@ export async function runHeadcount(
       tracer
     );
     if (!fundingRes.ok) {
-      return buildRefusalOutput(fundingRes.refusal, tracer, context, holderSet);
+      return buildRefusalOutput(fundingRes.refusal, tracer, context);
     }
     const funding = fundingRes.result;
 
@@ -102,7 +103,7 @@ export async function runHeadcount(
       // Find first and last activity for this holder from transfer logs
       let firstBlock = Number(context.pinnedBlock);
       let lastBlock = 0;
-      let exogenousCount = 0; // Filled by agent or left as 0 if unsampled in stage 4
+      const exogenousCount = 0; // Filled by agent or left as 0 if unsampled in stage 4
       
       for (const log of transferLogs) {
         if (normalizeAddress(log.from) === addr || normalizeAddress(log.to) === addr) {
@@ -206,10 +207,9 @@ export async function runHeadcount(
 
 // Stub to handle early exits when a stage refuses to proceed
 function buildRefusalOutput(
-  refusal: any,
+  refusal: Stage0Refusal | Stage1Refusal | Stage3Refusal,
   tracer: TraceEmitter,
-  context?: RunContext,
-  holderSet?: any // Use specific type in real code
+  context?: RunContext
 ): RunOutput {
   // Build a minimally valid RunOutput indicating refusal
   // This satisfies the type checker while propagating the failure
@@ -219,7 +219,7 @@ function buildRefusalOutput(
     context: context ?? {} as RunContext,
     verdict: {
       verdict: refusal.verdict,
-      refusal_reason: refusal.reason as any,
+      refusal_reason: refusal.reason,
       confidence_basis: 'deterministic',
       unanswered: [refusal.detail],
       // Fill dummy values for required fields

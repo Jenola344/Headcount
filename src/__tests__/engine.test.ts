@@ -1,5 +1,5 @@
 import { expect, test, describe, vi } from 'vitest';
-import { computeHHI, computeClusterAdjustedHHI, computeBirthDispersion, computeSupplyShare, getDustThreshold } from '../engine/utils';
+import { computeHHI, computeClusterAdjustedHHI, computeBirthDispersion, computeSupplyShare } from '../engine/utils';
 import { stage6Adjudicate } from '../engine/stage6-adjudicate';
 import type { FundingResult, Signals } from '../engine/types';
 
@@ -23,17 +23,12 @@ describe('Engine Utilities', () => {
     const clusters = new Map([
       ['c1', ['0x1', '0x2']], // Merges into 0.4
     ]);
-    const holderCluster = new Map([
-      ['0x1', 'c1'],
-      ['0x2', 'c1'],
-    ]);
-
     // Naive HHI: 0.2^2 + 0.2^2 + 0.1^2 = 0.04 + 0.04 + 0.01 = 0.09
     const naive = computeHHI(Array.from(holderShares.values()));
     expect(naive).toBeCloseTo(0.09);
 
     // Cluster HHI: 0.4^2 + 0.1^2 = 0.16 + 0.01 = 0.17
-    const adjusted = computeClusterAdjustedHHI(holderShares, clusters, holderCluster);
+    const adjusted = computeClusterAdjustedHHI(holderShares, clusters);
     expect(adjusted).toBeCloseTo(0.17);
   });
 
