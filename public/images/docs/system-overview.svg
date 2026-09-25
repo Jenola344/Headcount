@@ -1,0 +1,36 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" fill="#0A0A0D"/>
+  <rect x="40" y="40" width="1120" height="680" rx="28" fill="#111318" stroke="#23262C"/>
+  <rect x="92" y="112" width="270" height="126" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="465" y="112" width="270" height="126" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="838" y="112" width="270" height="126" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="92" y="328" width="1016" height="248" rx="22" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="110" y="352" width="260" height="184" rx="16" fill="#0F1319" stroke="#2A2E38"/>
+  <rect x="420" y="352" width="260" height="184" rx="16" fill="#0F1319" stroke="#2A2E38"/>
+  <rect x="730" y="352" width="260" height="184" rx="16" fill="#0F1319" stroke="#2A2E38"/>
+  <rect x="1024" y="352" width="48" height="184" rx="12" fill="#1C211B" stroke="#2A2E38"/>
+  <path d="M362 175H465" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M735 175H838" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M210 238V328" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M600 238V328" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M970 238V328" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <text x="182" y="166" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">Base RPC</text>
+  <text x="600" y="166" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">Analytic core</text>
+  <text x="970" y="166" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">Receipt</text>
+  <text x="240" y="196" fill="#9AA0AC" font-family="monospace" font-size="13">transfer logs</text>
+  <text x="600" y="196" fill="#9AA0AC" font-family="monospace" font-size="13">graph + scoring</text>
+  <text x="970" y="196" fill="#9AA0AC" font-family="monospace" font-size="13">sha-256 proof</text>
+  <text x="240" y="455" fill="#F4F4F1" font-family="monospace" font-size="14">holder scan</text>
+  <text x="552" y="455" fill="#F4F4F1" font-family="monospace" font-size="14">funding trace</text>
+  <text x="862" y="455" fill="#F4F4F1" font-family="monospace" font-size="14">cluster collapse</text>
+  <text x="1041" y="450" fill="#37E29A" font-family="monospace" font-size="12">verdict</text>
+  <circle cx="192" cy="510" r="42" fill="#121B1A" stroke="#37E29A" stroke-width="3"/>
+  <circle cx="510" cy="510" r="42" fill="#1A1717" stroke="#F3BA5A" stroke-width="3"/>
+  <circle cx="826" cy="510" r="42" fill="#1A1717" stroke="#F2748A" stroke-width="3"/>
+  <path d="M230 510H468" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M552 510H784" stroke="#F3BA5A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M868 510H1000" stroke="#F2748A" stroke-width="3" stroke-linecap="round"/>
+  <text x="239" y="620" fill="#9AA0AC" font-family="monospace" font-size="12">wallet state</text>
+  <text x="548" y="620" fill="#9AA0AC" font-family="monospace" font-size="12">funding links</text>
+  <text x="843" y="620" fill="#9AA0AC" font-family="monospace" font-size="12">sybil rings</text>
+</svg>

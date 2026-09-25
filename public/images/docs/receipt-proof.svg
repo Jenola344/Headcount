@@ -1,0 +1,24 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" fill="#0A0A0D"/>
+  <rect x="66" y="80" width="1068" height="600" rx="32" fill="#111318" stroke="#23262C"/>
+  <rect x="112" y="152" width="260" height="140" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="470" y="152" width="258" height="140" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="824" y="152" width="260" height="140" rx="18" fill="#15181F" stroke="#2A2E38"/>
+  <rect x="240" y="398" width="720" height="170" rx="22" fill="#15181F" stroke="#2A2E38"/>
+  <path d="M372 222H470" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M728 222H824" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M600 292V398" stroke="#37E29A" stroke-width="3" stroke-linecap="round"/>
+  <rect x="292" y="442" width="270" height="84" rx="12" fill="#0C1315" stroke="#2A2E38"/>
+  <rect x="610" y="442" width="270" height="84" rx="12" fill="#0C1315" stroke="#2A2E38"/>
+  <text x="242" y="205" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">block</text>
+  <text x="600" y="205" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">state hash</text>
+  <text x="954" y="205" fill="#F4F4F1" font-family="monospace" font-size="18" text-anchor="middle">receipt</text>
+  <text x="242" y="238" fill="#9AA0AC" font-family="monospace" font-size="12">#24614035</text>
+  <text x="600" y="238" fill="#9AA0AC" font-family="monospace" font-size="12">transfer + wallet cluster</text>
+  <text x="954" y="238" fill="#9AA0AC" font-family="monospace" font-size="12">sha-256 digest</text>
+  <text x="427" y="485" fill="#F4F4F1" font-family="monospace" font-size="22" text-anchor="middle">proof</text>
+  <text x="745" y="485" fill="#F4F4F1" font-family="monospace" font-size="22" text-anchor="middle">replay</text>
+  <text x="427" y="515" fill="#9AA0AC" font-family="monospace" font-size="12">raw inputs</text>
+  <text x="745" y="515" fill="#9AA0AC" font-family="monospace" font-size="12">same hash, same verdict</text>
+  <text x="600" y="610" fill="#37E29A" font-family="monospace" font-size="16" text-anchor="middle">deterministic verification path</text>
+</svg>

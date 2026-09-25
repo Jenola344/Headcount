@@ -98,6 +98,7 @@ export default function HeaderNavbar() {
   const navItems = [
     { name: 'Browse', href: '/' },
     { name: 'Findings', href: '/findings' },
+    { name: 'Docs', href: '/docs' },
     { name: 'Verify Receipt', href: '/verify' },
   ];
 
