@@ -204,6 +204,60 @@ export default function DocsPage() {
           ))}
         </div>
       </section>
+
+      <section className="rounded-3xl border border-line bg-panel/60 p-6 md:p-8">
+        <div className="mb-6">
+          <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-text-faint">meet the team</div>
+          <h2 className="mt-2 text-3xl font-black text-text font-heading">Headcount Founder</h2>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="rounded-[28px] border border-line bg-panel-2 p-6">
+            <div className="flex h-40 w-40 items-center justify-center rounded-full border border-green/30 bg-gradient-to-br from-green/20 via-panel-2 to-purple/20 text-4xl font-black text-green shadow-[0_0_30px_rgba(55,226,154,0.12)]">
+              JO
+            </div>
+            <div className="mt-6 space-y-2">
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-green">founder</div>
+              <div className="text-2xl font-black text-text font-heading">Jesutola Olusegun</div>
+              <div className="text-sm text-text-muted">Web3 Developer • Builder • Developer Relations</div>
+            </div>
+          </div>
+
+          <div className="space-y-5 rounded-[28px] border border-line bg-panel-2 p-6">
+            <p className="text-lg leading-8 text-text">
+              Jesutola Olusegun (Jenola) is a Web3 developer and Developer Relations-focused builder interested in
+              blockchain infrastructure, ecosystem growth, and practical on-chain applications.
+            </p>
+
+            <p className="text-sm leading-7 text-text-muted">
+              He is the founder and builder of Headcount, an on-chain analytics project focused on distinguishing
+              wallet counts from evidence-backed estimates of independent participants.
+            </p>
+
+            <p className="text-sm leading-7 text-text-muted">
+              His technical interests include frontend development, smart contracts, blockchain infrastructure, and
+              Web3 ecosystem development, with experience exploring technologies across EVM and other blockchain
+              ecosystems.
+            </p>
+
+            <div className="rounded-2xl border border-line bg-panel p-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-text-faint">approach to headcount</div>
+              <ul className="mt-3 space-y-2 text-sm text-text-muted">
+                <li>• Deterministic on-chain analysis</li>
+                <li>• Evidence over assumptions</li>
+                <li>• Reproducibility</li>
+                <li>• Blockchain transparency</li>
+                <li>• Independent-holder measurement</li>
+                <li>• Openly documenting limitations and incorrect results</li>
+              </ul>
+            </div>
+
+            <blockquote className="border-l-2 border-green/50 pl-4 text-base italic text-text">
+              Building transparent, reproducible tools for understanding on-chain communities.
+            </blockquote>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
