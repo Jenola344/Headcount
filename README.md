@@ -194,5 +194,5 @@ src/
 
 
 - **X:** [_g3theadcount_](https://x.com/g3theadcount)
-- **Telegram:** [_add link_](https://t.me/getheadcount)
+- **Telegram:** [_getheadcount_](https://t.me/getheadcount)
 - **Website:** [_Headcount_](https://headcount-seven-omega.vercel.app/)
