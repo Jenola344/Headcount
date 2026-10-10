@@ -4,7 +4,7 @@
 
 Headcount is an autonomous agent for Base that measures how many *independent humans* actually stand behind a token's holder count — not how many wallets hold it. Every finding ships with a SHA-256 receipt you can recompute yourself.
 
-Built for the **Orion Builder Hackathon** (orionagents.org) — live on Base mainnet, zero simulated data.
+live on Base mainnet, zero simulated data.
 
 ---
 
