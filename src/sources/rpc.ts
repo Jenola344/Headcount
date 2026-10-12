@@ -199,9 +199,16 @@ export interface TransferLogResult {
 }
 
 /**
- * Page Transfer event logs from fromBlock to toBlock.
- * Uses adaptive chunk sizing: starts at chunkSize, halves on "too many results" errors.
+ * Page Transfer event logs from toBlock DOWN to fromBlock (reverse chronological).
  * 
+ * Why reverse?
+ * 1. Free RPCs (PublicNode, etc.) have tight archive horizons (~10,000 blocks back from tip).
+ *    Scanning forwards from block 0 immediately triggers archive request rejections (-32602).
+ *    Scanning backwards from pinnedBlock captures all recent token activity first.
+ * 2. If the archive boundary is reached, we preserve all recent logs instead of crashing
+ *    with 0 logs.
+ * 
+ * Uses adaptive chunk sizing: starts at chunkSize, halves on block range/size limit errors.
  * Budget: maxPages controls how many RPC calls we're willing to make.
  */
 export async function getTransferLogs(
@@ -216,15 +223,16 @@ export async function getTransferLogs(
   const sourceCalls: SourceCall[] = [];
   let pages = 0;
   let chunkSize = initialChunkSize;
-  let currentFrom = fromBlock;
+  let currentTo = toBlock;
   let windowTruncated = false;
-  let earliestBlockReached = fromBlock;
+  let earliestBlockReached = toBlock;
   let rateLimitRetries = 0;
 
-  while (currentFrom <= toBlock && pages < maxPages) {
-    const currentTo = currentFrom + chunkSize - 1n > toBlock
-      ? toBlock
-      : currentFrom + chunkSize - 1n;
+  while (currentTo >= fromBlock && pages < maxPages) {
+    let currentFrom = currentTo >= chunkSize ? currentTo - chunkSize + 1n : 0n;
+    if (currentFrom < fromBlock) {
+      currentFrom = fromBlock;
+    }
 
     try {
       await rateLimiter.acquire();
@@ -256,38 +264,75 @@ export async function getTransferLogs(
 
       pages++;
       earliestBlockReached = currentFrom;
-      currentFrom = currentTo + 1n;
+      if (currentFrom === 0n || currentFrom === fromBlock) {
+        break;
+      }
+      currentTo = currentFrom - 1n;
     } catch (err) {
       const errMsg = String(err);
-      // Adaptive: if the range returned too many results or exceeds block range limits, halve the chunk size
-      if (errMsg.includes('too many') || errMsg.includes('query returned more than') || errMsg.includes('Log response size exceeded') || errMsg.includes('limited to a')) {
+
+      // Adaptive: range too large or log response too big -> halve chunk
+      if (
+        errMsg.includes('too many') ||
+        errMsg.includes('query returned more than') ||
+        errMsg.includes('Log response size exceeded') ||
+        errMsg.includes('limited to a')
+      ) {
         chunkSize = chunkSize / 2n;
         if (chunkSize < 100n) {
-          // Can't go smaller — truncate
           windowTruncated = true;
           break;
         }
-        continue; // Retry same range with smaller chunk
+        continue; // Retry same currentTo with smaller chunk
       }
-      // Rate limit: wait with exponential backoff and retry the same chunk
-      if (errMsg.includes('request limit') || errMsg.includes('-32011') || errMsg.includes('429') || errMsg.includes('rate limit') || errMsg.includes('Too Many Requests')) {
+
+      // Archive node boundary hit (e.g. PublicNode: "Archive requests require a personal token")
+      // or invalid params due to block being beyond free tier horizon:
+      if (
+        errMsg.includes('Archive requests require') ||
+        errMsg.includes('archive') ||
+        errMsg.includes('-32602')
+      ) {
+        // Can't read further back into history with current RPC
+        windowTruncated = true;
+        break;
+      }
+
+      // Rate limit: exponential backoff
+      if (
+        errMsg.includes('request limit') ||
+        errMsg.includes('-32011') ||
+        errMsg.includes('429') ||
+        errMsg.includes('rate limit') ||
+        errMsg.includes('Too Many Requests')
+      ) {
         rateLimitRetries++;
         if (rateLimitRetries > 5) {
-          // Exhausted rate-limit retries — truncate rather than crash
           windowTruncated = true;
           break;
         }
         const backoffMs = 2000 * Math.pow(2, rateLimitRetries - 1) + Math.random() * 1000;
         await new Promise(resolve => setTimeout(resolve, backoffMs));
-        continue; // Retry same range
+        continue; // Retry same chunk
       }
-      throw err;
+
+      // Generic RPC failure on this chunk: truncate window rather than failing entire run
+      windowTruncated = true;
+      break;
     }
   }
 
-  if (currentFrom <= toBlock) {
+  if (earliestBlockReached > fromBlock) {
     windowTruncated = true;
   }
+
+  // Sort logs in chronological order so balance replay and timestamps are accurate
+  allLogs.sort((a, b) => {
+    if (a.blockNumber !== b.blockNumber) {
+      return a.blockNumber < b.blockNumber ? -1 : 1;
+    }
+    return a.logIndex - b.logIndex;
+  });
 
   return {
     logs: allLogs,

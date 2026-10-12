@@ -79,7 +79,7 @@ export async function stage1BuildHolderSet(
     fromBlock,
     context.pinnedBlock,
     500,  // Max pages
-    5000n // Initial chunk size
+    2000n // Initial chunk size (2000 fits standard RPC log range limits)
   );
   sourceCalls.push(...logResult.sourceCalls);
 
