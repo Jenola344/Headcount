@@ -213,7 +213,11 @@ export async function retryWithBackoff<T>(
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       if (attempt < maxRetries) {
-        const delay = baseDelayMs * Math.pow(2, attempt) + Math.random() * 500;
+        const errMsg = String(err);
+        // Use a longer backoff multiplier for rate-limit errors
+        const isRateLimit = errMsg.includes('request limit') || errMsg.includes('-32011') || errMsg.includes('429') || errMsg.includes('rate limit');
+        const multiplier = isRateLimit ? 3 : 1;
+        const delay = baseDelayMs * multiplier * Math.pow(2, attempt) + Math.random() * 500;
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }

@@ -10,7 +10,7 @@ import { formatSourceCall, type SourceCall } from './rpc';
 
 const basescanLimiter = new RateLimiter(5, 1000); // Basescan free tier: 5 req/s
 
-const BASESCAN_API = 'https://api.basescan.org/api';
+const BASESCAN_API = 'https://api.etherscan.io/v2/api';
 
 // ─── Contract Creation Info ─────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ export async function getContractCreationBlock(
 
   try {
     const result = await retryWithBackoff(async () => {
-      const url = `${BASESCAN_API}?module=contract&action=getcontractcreation&contractaddresses=${address}&apikey=${key}`;
+      const url = `${BASESCAN_API}?chainid=8453&module=contract&action=getcontractcreation&contractaddresses=${address}&apikey=${key}`;
       const res = await fetch(url);
       const json = await res.json() as {
         status: string;
@@ -55,7 +55,7 @@ export async function getContractCreationBlock(
     // Now get the transaction receipt to find the block number
     await basescanLimiter.acquire();
     const txResult = await retryWithBackoff(async () => {
-      const url = `${BASESCAN_API}?module=proxy&action=eth_getTransactionByHash&txhash=${result.txHash}&apikey=${key}`;
+      const url = `${BASESCAN_API}?chainid=8453&module=proxy&action=eth_getTransactionByHash&txhash=${result.txHash}&apikey=${key}`;
       const res = await fetch(url);
       return res.json() as Promise<{ result?: { blockNumber: string } }>;
     });
@@ -90,7 +90,7 @@ export async function isContractVerified(
 
   try {
     const result = await retryWithBackoff(async () => {
-      const url = `${BASESCAN_API}?module=contract&action=getsourcecode&address=${address}&apikey=${key}`;
+      const url = `${BASESCAN_API}?chainid=8453&module=contract&action=getsourcecode&address=${address}&apikey=${key}`;
       const res = await fetch(url);
       return res.json() as Promise<{
         status: string;

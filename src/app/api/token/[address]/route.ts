@@ -18,7 +18,7 @@ export async function GET(
   // Check if client wants SSE stream
   const isStream = request.headers.get('accept') === 'text/event-stream';
 
-  const rpcUrl = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+  const rpcUrl = process.env.BASE_RPC_URL;
   const client = createBaseClient(rpcUrl);
 
   const config: RunConfig = {

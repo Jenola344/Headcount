@@ -25,7 +25,7 @@ async function main() {
   console.log(`\n🔍 Reproducing Headcount run for ${tokenAddress}...`);
 
   const rpcUrl = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
-  console.log(`📡 Using Base RPC: ${rpcUrl}`);
+  console.log(`📡 Using Base RPC: ${rpcUrl || '(fallback pool)'}`);
   const client = createBaseClient(rpcUrl);
 
   const config: RunConfig = {

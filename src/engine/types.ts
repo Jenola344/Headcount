@@ -149,7 +149,7 @@ export interface RunConfig {
   tokenAddress: Address;
   holderCap: number;
   probeBudget: number;
-  rpcUrl: string;
+  rpcUrl?: string;
   alchemyApiKey?: string;
   basescanApiKey?: string;
   groqApiKey?: string;

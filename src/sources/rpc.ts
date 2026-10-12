@@ -8,6 +8,7 @@
 import {
   createPublicClient,
   http,
+  fallback,
   parseAbiItem,
   type PublicClient,
   type Transport,
@@ -32,18 +33,37 @@ export function formatSourceCall(method: string, params?: string): SourceCall {
   return params ? `${method}:${params}` : method;
 }
 
+// ─── Free Base RPC endpoints (ordered by reliability for eth_getLogs) ────────────
+
+const FREE_BASE_RPCS = [
+  'https://base-rpc.publicnode.com',
+  'https://base.gateway.tenderly.co',
+  'https://base.drpc.org',
+  'https://mainnet.base.org',
+];
+
 // ─── Client Factory ─────────────────────────────────────────────────────────────
 
-const rateLimiter = new RateLimiter(25, 1000); // 25 req/s default
+const rateLimiter = new RateLimiter(10, 1000); // 10 req/s — safe for free tiers
 
 export function createBaseClient(rpcUrl?: string): PublicClient<Transport, Chain> {
+  const httpOpts = {
+    retryCount: 3,
+    retryDelay: 1500,
+    timeout: 30_000,
+  };
+
+  // If a dedicated RPC URL is provided (e.g. Alchemy), use it as primary
+  // with the free RPCs as fallbacks
+  const userRpc = rpcUrl || process.env.BASE_RPC_URL;
+
+  const transports = userRpc
+    ? [http(userRpc, httpOpts), ...FREE_BASE_RPCS.map(u => http(u, httpOpts))]
+    : FREE_BASE_RPCS.map(u => http(u, httpOpts));
+
   return createPublicClient({
     chain: base,
-    transport: http(rpcUrl || process.env.BASE_RPC_URL || 'https://mainnet.base.org', {
-      retryCount: 3,
-      retryDelay: 1000,
-      timeout: 30_000,
-    }),
+    transport: fallback(transports, { rank: true, retryCount: 2 }),
   }) as PublicClient<Transport, Chain>;
 }
 
@@ -199,6 +219,7 @@ export async function getTransferLogs(
   let currentFrom = fromBlock;
   let windowTruncated = false;
   let earliestBlockReached = fromBlock;
+  let rateLimitRetries = 0;
 
   while (currentFrom <= toBlock && pages < maxPages) {
     const currentTo = currentFrom + chunkSize - 1n > toBlock
@@ -247,6 +268,18 @@ export async function getTransferLogs(
           break;
         }
         continue; // Retry same range with smaller chunk
+      }
+      // Rate limit: wait with exponential backoff and retry the same chunk
+      if (errMsg.includes('request limit') || errMsg.includes('-32011') || errMsg.includes('429') || errMsg.includes('rate limit') || errMsg.includes('Too Many Requests')) {
+        rateLimitRetries++;
+        if (rateLimitRetries > 5) {
+          // Exhausted rate-limit retries — truncate rather than crash
+          windowTruncated = true;
+          break;
+        }
+        const backoffMs = 2000 * Math.pow(2, rateLimitRetries - 1) + Math.random() * 1000;
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+        continue; // Retry same range
       }
       throw err;
     }
